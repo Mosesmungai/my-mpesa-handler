@@ -78,9 +78,41 @@ const testConnection = async (req, res) => {
     }
 };
 
+/**
+ * Update a system
+ */
+const updateSystem = async (req, res) => {
+    const { name, consumerKey, consumerSecret, shortcode, passkey, environment, callbackUrl } = req.body;
+    try {
+        const system = await db.oneOrNone('SELECT * FROM systems WHERE id = $1 AND owner_id = $2', [req.params.id, req.user.id]);
+        if (!system) return res.status(404).json({ error: 'System not found' });
+
+        const updates = {
+            name: name || system.name,
+            shortcode: shortcode || system.shortcode,
+            environment: environment || system.environment,
+            callback_url: callbackUrl || system.callback_url,
+            consumer_key: consumerKey ? encrypt(consumerKey) : system.consumer_key,
+            consumer_secret: consumerSecret ? encrypt(consumerSecret) : system.consumer_secret,
+            passkey: passkey ? encrypt(passkey) : system.passkey
+        };
+
+        await db.none(
+            `UPDATE systems SET name=$1, shortcode=$2, environment=$3, callback_url=$4, consumer_key=$5, consumer_secret=$6, passkey=$7 WHERE id=$8`,
+            [updates.name, updates.shortcode, updates.environment, updates.callback_url, updates.consumer_key, updates.consumer_secret, updates.passkey, req.params.id]
+        );
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Update System Error:', error.message);
+        res.status(500).json({ error: 'Failed to update system' });
+    }
+};
+
 module.exports = {
     getSystems,
     addSystem,
+    updateSystem,
     deleteSystem,
     testConnection
 };

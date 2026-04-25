@@ -36,6 +36,7 @@ app.post('/api/v1/callbacks/stk', callbackController.handleSTKCallback);
 app.get('/api/v1/dashboard/stats', authenticateUser, dashboardController.getDashboardStats);
 app.get('/api/v1/systems', authenticateUser, systemController.getSystems);
 app.post('/api/v1/systems', authenticateUser, systemController.addSystem);
+app.put('/api/v1/systems/:id', authenticateUser, systemController.updateSystem);
 app.delete('/api/v1/systems/:id', authenticateUser, systemController.deleteSystem);
 app.get('/api/v1/systems/:id/test', authenticateUser, systemController.testConnection);
 app.post('/api/v1/test/stkpush', authenticateUser, testController.testSTKPush);
