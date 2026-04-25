@@ -1,5 +1,5 @@
 const db = require('../models/db');
-const MpesaService = require('../services/MpesaService');
+const MpesaService = require('../services/mpesaService');
 
 /**
  * Handle STK Push Test Request from Dashboard
