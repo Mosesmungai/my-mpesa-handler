@@ -1,13 +1,13 @@
 import React from 'react';
 import { LayoutDashboard, Settings, Activity, History, Shield, LogOut } from 'lucide-react';
 
-const Sidebar = () => {
+const Sidebar = ({ user, activeTab, setActiveTab }) => {
   const menuItems = [
-    { icon: <LayoutDashboard size={20} />, label: 'Dashboard', active: true },
-    { icon: <Shield size={20} />, label: 'Systems' },
-    { icon: <Activity size={20} />, label: 'Testing Panel' },
-    { icon: <History size={20} />, label: 'Transaction Logs' },
-    { icon: <Settings size={20} />, label: 'Settings' },
+    { id: 'dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
+    { id: 'systems', icon: <Shield size={20} />, label: 'Systems' },
+    { id: 'testing', icon: <Activity size={20} />, label: 'Testing Panel' },
+    { id: 'logs', icon: <History size={20} />, label: 'Transaction Logs' },
+    { id: 'settings', icon: <Settings size={20} />, label: 'Settings' },
   ];
 
   return (
@@ -17,11 +17,11 @@ const Sidebar = () => {
         <h2 style={{ fontSize: '1.2rem' }}>Daraja Gateway</h2>
       </div>
 
-      <nav style={{ flex: 1 }}>
-        {menuItems.map((item, index) => (
+        {menuItems.map((item) => (
           <div 
-            key={index} 
-            className={`nav-item ${item.active ? 'active' : ''}`}
+            key={item.id} 
+            className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
+            onClick={() => setActiveTab(item.id)}
             style={{ 
               display: 'flex', 
               alignItems: 'center', 
@@ -30,8 +30,8 @@ const Sidebar = () => {
               borderRadius: '8px', 
               cursor: 'pointer',
               marginBottom: '4px',
-              color: item.active ? 'var(--primary)' : 'var(--text-muted)',
-              background: item.active ? 'rgba(0, 230, 118, 0.1)' : 'transparent',
+              color: activeTab === item.id ? 'var(--primary)' : 'var(--text-muted)',
+              background: activeTab === item.id ? 'rgba(0, 230, 118, 0.1)' : 'transparent',
               transition: 'var(--transition-fast)'
             }}
           >

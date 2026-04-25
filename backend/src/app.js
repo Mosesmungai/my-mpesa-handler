@@ -9,6 +9,7 @@ const transactionController = require('./controllers/transactionController');
 const callbackController = require('./controllers/callbackController');
 const authController = require('./controllers/authController');
 const dashboardController = require('./controllers/dashboardController');
+const systemController = require('./controllers/systemController');
 
 const app = express();
 
@@ -32,8 +33,8 @@ app.post('/api/v1/callbacks/stk', callbackController.handleSTKCallback);
 
 // Routes - Dashboard API (Protected via JWT)
 app.get('/api/v1/dashboard/stats', authenticateUser, dashboardController.getDashboardStats);
-// app.get('/api/v1/systems', authenticateUser, ...);
-// app.post('/api/v1/systems', authenticateUser, ...);
+app.get('/api/v1/systems', authenticateUser, systemController.getSystems);
+app.post('/api/v1/systems', authenticateUser, systemController.addSystem);
 
 // Health Check
 app.get('/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() }));
