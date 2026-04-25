@@ -1,5 +1,5 @@
 const db = require('../models/db');
-const MpesaService = require('../services/mpesaService');
+const mpesaService = require('../services/mpesaService');
 
 /**
  * Handle STK Push Test Request from Dashboard
@@ -18,17 +18,14 @@ const testSTKPush = async (req, res) => {
             return res.status(404).json({ error: 'System not found or unauthorized' });
         }
 
-        // 2. Clear credentials from encryption for the service
-        const mpesaService = new MpesaService(system);
+        // 2. Initiate push using the mpesaService singleton
+        const result = await mpesaService.stkPush(system, amount, phone, reference, description);
 
-        // 3. Initiate push
-        const result = await mpesaService.stkPush(phone, amount, reference, description);
-
-        // 4. Log the test transaction
+        // 3. Log the test transaction
         await db.none(
-            `INSERT INTO transactions (system_id, phone, amount, reference, mpesa_receipt, status) 
-             VALUES ($1, $2, $3, $4, $5, $6)`,
-            [system.id, phone, amount, reference, result.CheckoutRequestID, 'PENDING']
+            `INSERT INTO transactions (system_id, transaction_type, merchant_request_id, checkout_request_id, origin_response, amount, phone_number, reference, status) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            [system.id, 'STK_TEST', result.MerchantRequestID, result.CheckoutRequestID, result, amount, phone, reference, 'PENDING']
         );
 
         res.json({
