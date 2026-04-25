@@ -24,6 +24,10 @@ class MpesaService {
         const consumerKey = decrypt(system.consumer_key);
         const consumerSecret = decrypt(system.consumer_secret);
         
+        const baseUrl = system.environment === 'live' 
+            ? 'https://api.safaricom.co.ke' 
+            : 'https://sandbox.safaricom.co.ke';
+
         // DEBUG: Log what we're actually sending to Daraja
         console.log('=== DARAJA AUTH DEBUG ===');
         console.log('Base URL:', baseUrl);
@@ -32,10 +36,6 @@ class MpesaService {
         console.log('=========================');
         
         const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
-        
-        const baseUrl = system.environment === 'live' 
-            ? 'https://api.safaricom.co.ke' 
-            : 'https://sandbox.safaricom.co.ke';
 
         try {
             const response = await axios.get(`${baseUrl}/oauth/v1/generate?grant_type=client_credentials`, {
@@ -43,6 +43,10 @@ class MpesaService {
                     Authorization: `Basic ${auth}`
                 }
             });
+
+            console.log('=== OAUTH SUCCESS ===');
+            console.log('Token received:', access_token?.slice(0, 20) + '...');
+            console.log('=====================');
 
             const { access_token, expires_in } = response.data;
             this.tokens.set(cacheKey, {
@@ -67,8 +71,14 @@ class MpesaService {
             : 'https://sandbox.safaricom.co.ke';
 
         const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
+        
+        // Use sandbox passkey from env or live passkey from DB
+        const passkey = system.environment === 'sandbox' 
+            ? process.env.SANDBOX_PASSKEY 
+            : decrypt(system.passkey);
+        
         const password = Buffer.from(
-            `${system.shortcode}${decrypt(system.passkey)}${timestamp}`
+            `${system.shortcode}${passkey}${timestamp}`
         ).toString('base64');
 
         const payload = {
