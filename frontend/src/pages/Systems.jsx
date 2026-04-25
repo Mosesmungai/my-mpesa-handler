@@ -6,13 +6,13 @@ const Systems = () => {
   const [systems, setSystems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
-  const [formData, setFormData] = useState({ 
-    name: '', 
-    consumerKey: '', 
-    consumerSecret: '', 
-    shortcode: '174379', 
-    passkey: '', 
-    environment: 'sandbox' 
+  const [formData, setFormData] = useState({
+    name: '',
+    consumerKey: '',
+    consumerSecret: '',
+    shortcode: '174379',
+    passkey: '',
+    environment: 'sandbox'
   });
   const [saving, setSaving] = useState(false);
 
@@ -118,19 +118,19 @@ const Systems = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-muted)' }}>System Name</label>
-                <input required type="text" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }} placeholder="e.g. Mobile App" onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                <input required type="text" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }} placeholder="e.g. Mobile App" onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-muted)' }}>Environment</label>
-                  <select 
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }} 
+                  <select
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }}
                     value={formData.environment}
                     onChange={(e) => {
                       const env = e.target.value;
                       setFormData({
-                        ...formData, 
-                        environment: env, 
+                        ...formData,
+                        environment: env,
                         shortcode: env === 'sandbox' ? '174379' : formData.shortcode
                       });
                     }}
@@ -141,23 +141,23 @@ const Systems = () => {
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-muted)' }}>Shortcode</label>
-                  <input 
-                    required 
-                    type="text" 
+                  <input
+                    required
+                    type="text"
                     value={formData.shortcode}
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }} 
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }}
                     placeholder="e.g. 174379"
-                    onChange={(e) => setFormData({...formData, shortcode: e.target.value})} 
+                    onChange={(e) => setFormData({ ...formData, shortcode: e.target.value })}
                   />
                 </div>
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-muted)' }}>Consumer Key</label>
-                <input required type="text" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }} onChange={(e) => setFormData({...formData, consumerKey: e.target.value})} />
+                <input required type="text" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }} onChange={(e) => setFormData({ ...formData, consumerKey: e.target.value })} />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-muted)' }}>Consumer Secret</label>
-                <input required type="password" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }} onChange={(e) => setFormData({...formData, consumerSecret: e.target.value})} />
+                <input required type="password" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }} onChange={(e) => setFormData({ ...formData, consumerSecret: e.target.value })} />
               </div>
               <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
                 <button type="submit" disabled={saving} className="btn btn-primary" style={{ flex: 1 }}>{saving ? 'Saving...' : 'Save Credentials'}</button>

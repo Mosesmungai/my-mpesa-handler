@@ -49,7 +49,38 @@ const addSystem = async (req, res) => {
     }
 };
 
+/**
+ * Delete a system
+ */
+const deleteSystem = async (req, res) => {
+    try {
+        await db.none('DELETE FROM systems WHERE id = $1 AND owner_id = $2', [req.params.id, req.user.id]);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete system' });
+    }
+};
+
+/**
+ * Test connectivity for a system (Generate OAuth Token)
+ */
+const testConnection = async (req, res) => {
+    try {
+        const system = await db.oneOrNone('SELECT * FROM systems WHERE id = $1 AND owner_id = $2', [req.params.id, req.user.id]);
+        if (!system) return res.status(404).json({ error: 'System not found' });
+
+        const mpesaService = require('../services/mpesaService');
+        const token = await mpesaService.getAuthToken(system);
+        
+        res.json({ success: true, message: 'Connection successful! OAuth token generated.' });
+    } catch (error) {
+        res.status(400).json({ error: 'Connection failed: ' + (error.message || 'Invalid credentials') });
+    }
+};
+
 module.exports = {
     getSystems,
-    addSystem
+    addSystem,
+    deleteSystem,
+    testConnection
 };

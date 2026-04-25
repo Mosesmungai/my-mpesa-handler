@@ -75,11 +75,16 @@ class MpesaService {
             TransactionDesc: description
         };
 
-        const response = await axios.post(`${baseUrl}/mpesa/stkpush/v1/processrequest`, payload, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-
-        return response.data;
+        try {
+            const response = await axios.post(`${baseUrl}/mpesa/stkpush/v1/processrequest`, payload, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            return response.data;
+        } catch (error) {
+            const errorDetail = error.response?.data || error.message;
+            console.error('M-Pesa STK Push Error Details:', JSON.stringify(errorDetail, null, 2));
+            throw new Error(errorDetail.errorMessage || errorDetail.errorMessage || 'M-Pesa STK Push failed');
+        }
     }
 
     // Add other methods (C2B, B2C, etc.) as needed...
