@@ -7,7 +7,14 @@ const Systems = () => {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [editingSystem, setEditingSystem] = useState(null);
-  const [formData, setFormData] = useState({ name: '', consumerKey: '', consumerSecret: '', shortcode: '174379', passkey: '', environment: 'sandbox' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    consumerKey: '', 
+    consumerSecret: '', 
+    shortcode: '174379', 
+    passkey: 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919', 
+    environment: 'sandbox' 
+  });
   const [saving, setSaving] = useState(false);
   const [testingId, setTestingId] = useState(null);
   const [testResult, setTestResult] = useState(null);
@@ -208,7 +215,15 @@ const Systems = () => {
                   <select 
                     style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '14px', borderRadius: '12px', color: '#fff' }} 
                     value={formData.environment}
-                    onChange={(e) => setFormData({...formData, environment: e.target.value, shortcode: e.target.value === 'sandbox' ? '174379' : formData.shortcode})}
+                    onChange={(e) => {
+                      const env = e.target.value;
+                      setFormData({
+                        ...formData, 
+                        environment: env, 
+                        shortcode: env === 'sandbox' ? '174379' : formData.shortcode,
+                        passkey: env === 'sandbox' ? 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919' : formData.passkey
+                      });
+                    }}
                   >
                     <option value="sandbox">Sandbox</option>
                     <option value="live">Live</option>
