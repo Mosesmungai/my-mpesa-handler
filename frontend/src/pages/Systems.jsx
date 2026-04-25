@@ -6,7 +6,14 @@ const Systems = () => {
   const [systems, setSystems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
-  const [formData, setFormData] = useState({ name: '', consumerKey: '', consumerSecret: '', shortcode: '', passkey: '', environment: 'sandbox' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    consumerKey: '', 
+    consumerSecret: '', 
+    shortcode: '174379', 
+    passkey: '', 
+    environment: 'sandbox' 
+  });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -115,15 +122,33 @@ const Systems = () => {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-muted)' }}>Shortcode</label>
-                  <input required type="text" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }} onChange={(e) => setFormData({...formData, shortcode: e.target.value})} />
-                </div>
-                <div>
                   <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-muted)' }}>Environment</label>
-                  <select style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }} onChange={(e) => setFormData({...formData, environment: e.target.value})}>
+                  <select 
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }} 
+                    value={formData.environment}
+                    onChange={(e) => {
+                      const env = e.target.value;
+                      setFormData({
+                        ...formData, 
+                        environment: env, 
+                        shortcode: env === 'sandbox' ? '174379' : formData.shortcode
+                      });
+                    }}
+                  >
                     <option value="sandbox">Sandbox</option>
                     <option value="live">Live</option>
                   </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-muted)' }}>Shortcode</label>
+                  <input 
+                    required 
+                    type="text" 
+                    value={formData.shortcode}
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', color: '#fff' }} 
+                    placeholder="e.g. 174379"
+                    onChange={(e) => setFormData({...formData, shortcode: e.target.value})} 
+                  />
                 </div>
               </div>
               <div>
