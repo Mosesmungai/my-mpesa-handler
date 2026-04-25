@@ -15,16 +15,15 @@ const initiateSTKPush = async (req, res) => {
     try {
         const response = await mpesaService.stkPush(system, amount, phone, reference, description || 'Payment');
         
-        // Log transaction to DB
+        // Log transaction to DB (Consistency fix: use 'phone' column)
         await db.none(
-            `INSERT INTO transactions (system_id, transaction_type, merchant_request_id, checkout_request_id, origin_response, amount, phone_number, reference) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+            `INSERT INTO transactions (system_id, transaction_type, merchant_request_id, checkout_request_id, amount, phone, reference) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7)`,
             [
                 system.id, 
                 'STK_PUSH', 
                 response.MerchantRequestID, 
                 response.CheckoutRequestID, 
-                response, 
                 amount, 
                 phone, 
                 reference
@@ -38,10 +37,10 @@ const initiateSTKPush = async (req, res) => {
             message: response.CustomerMessage
         });
     } catch (error) {
-        console.error('STK Push Error:', error.message);
+        console.error('STK Push External Error:', error.message);
         res.status(500).json({ 
             error: 'Failed to initiate STK Push', 
-            details: error.response?.data || error.message 
+            details: error.message 
         });
     }
 };
