@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings } from 'lucide-react';
+import { Settings as SettingsIcon } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Systems from './pages/Systems';
