@@ -10,6 +10,7 @@ const callbackController = require('./controllers/callbackController');
 const authController = require('./controllers/authController');
 const dashboardController = require('./controllers/dashboardController');
 const systemController = require('./controllers/systemController');
+const testController = require('./controllers/testController');
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.post('/api/v1/callbacks/stk', callbackController.handleSTKCallback);
 app.get('/api/v1/dashboard/stats', authenticateUser, dashboardController.getDashboardStats);
 app.get('/api/v1/systems', authenticateUser, systemController.getSystems);
 app.post('/api/v1/systems', authenticateUser, systemController.addSystem);
+app.post('/api/v1/test/stkpush', authenticateUser, testController.testSTKPush);
 
 // Root Route
 app.get('/', (req, res) => res.json({ 

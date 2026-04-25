@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { Settings } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Systems from './pages/Systems';
+import TestingPanel from './pages/TestingPanel';
+import Logs from './pages/Logs';
 import Login from './pages/Login';
 
 function App() {
@@ -18,8 +21,13 @@ function App() {
       <main>
         {activeTab === 'dashboard' && <Dashboard user={user} />}
         {activeTab === 'systems' && <Systems user={user} />}
-        {activeTab === 'testing' && <div className="glass" style={{ padding: '40px' }}>Testing Panel Coming Soon...</div>}
-        {activeTab === 'logs' && <div className="glass" style={{ padding: '40px' }}>Transaction Logs Coming Soon...</div>}
+        {activeTab === 'testing' && <TestingPanel user={user} />}
+        {activeTab === 'logs' && <Logs user={user} />}
+        {activeTab === 'settings' && <div className="glass shadow-glow" style={{ padding: '60px', textAlign: 'center' }}>
+          <Settings size={48} style={{ margin: '0 auto 20px', color: 'var(--primary)' }} />
+          <h2>System Configuration</h2>
+          <p>Maintenance mode and global rate limits are coming soon.</p>
+        </div>}
       </main>
     </div>
   );
