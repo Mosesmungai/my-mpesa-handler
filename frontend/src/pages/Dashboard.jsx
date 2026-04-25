@@ -3,11 +3,28 @@ import { TrendingUp, Users, CreditCard, DollarSign } from 'lucide-react';
 import api from '../services/api';
 
 const Dashboard = () => {
-  const stats = [
-    { label: 'Total Volume', value: 'KES 1.2M', icon: <DollarSign />, trend: '+12.5%' },
-    { label: 'Transactions', value: '4,231', icon: <CreditCard />, trend: '+5.2%' },
-    { label: 'Active Systems', value: '8', icon: <Users />, trend: '0%' },
-    { label: 'Success Rate', value: '99.4%', icon: <TrendingUp />, trend: '+0.4%' },
+  const [data, setData] = useState({ stats: [], recent: [] });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const { data } = await api.get('/dashboard/stats');
+        setData(data);
+      } catch (err) {
+        console.error('Failed to fetch dashboard stats', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const stats = data.stats.length > 0 ? data.stats : [
+    { label: 'Total Volume', value: 'KES 0.00', icon: <DollarSign />, trend: '0%' },
+    { label: 'Transactions', value: '0', icon: <CreditCard />, trend: '0%' },
+    { label: 'Active Systems', value: '0', icon: <Users />, trend: '0%' },
+    { label: 'Success Rate', value: '0%', icon: <TrendingUp />, trend: '0%' },
   ];
 
   return (

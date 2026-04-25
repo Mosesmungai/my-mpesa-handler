@@ -7,8 +7,8 @@ require('dotenv').config();
 const { authenticateSystem, authenticateUser } = require('./middleware/auth');
 const transactionController = require('./controllers/transactionController');
 const callbackController = require('./controllers/callbackController');
-
 const authController = require('./controllers/authController');
+const dashboardController = require('./controllers/dashboardController');
 
 const app = express();
 
@@ -31,7 +31,7 @@ app.post('/api/v1/stkpush', authenticateSystem, transactionController.initiateST
 app.post('/api/v1/callbacks/stk', callbackController.handleSTKCallback);
 
 // Routes - Dashboard API (Protected via JWT)
-// app.get('/api/v1/dashboard/stats', authenticateUser, ...);
+app.get('/api/v1/dashboard/stats', authenticateUser, dashboardController.getDashboardStats);
 // app.get('/api/v1/systems', authenticateUser, ...);
 // app.post('/api/v1/systems', authenticateUser, ...);
 
