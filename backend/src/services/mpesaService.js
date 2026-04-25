@@ -23,6 +23,14 @@ class MpesaService {
 
         const consumerKey = decrypt(system.consumer_key);
         const consumerSecret = decrypt(system.consumer_secret);
+        
+        // DEBUG: Log what we're actually sending to Daraja
+        console.log('=== DARAJA AUTH DEBUG ===');
+        console.log('Base URL:', baseUrl);
+        console.log('Consumer Key (first 10 chars):', consumerKey?.slice(0, 10));
+        console.log('Consumer Secret (first 10 chars):', consumerSecret?.slice(0, 10));
+        console.log('=========================');
+        
         const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
         
         const baseUrl = system.environment === 'live' 

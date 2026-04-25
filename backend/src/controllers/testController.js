@@ -1,5 +1,6 @@
 const db = require('../models/db');
 const mpesaService = require('../services/mpesaService');
+const { decrypt } = require('../utils/encryption');
 
 /**
  * Handle STK Push Test Request from Dashboard
@@ -17,6 +18,15 @@ const testSTKPush = async (req, res) => {
         if (!system) {
             return res.status(404).json({ error: 'System not found or unauthorized' });
         }
+
+        // DEBUG: Log decrypted credentials (remove after testing)
+        console.log('=== DEBUG CREDENTIALS ===');
+        console.log('Shortcode:', system.shortcode);
+        console.log('Consumer Key (decrypted):', decrypt(system.consumer_key)?.slice(0, 8) + '...');
+        console.log('Consumer Secret (decrypted):', decrypt(system.consumer_secret)?.slice(0, 8) + '...');
+        console.log('Passkey (decrypted):', decrypt(system.passkey)?.slice(0, 8) + '...');
+        console.log('Environment:', system.environment);
+        console.log('==========================');
 
         // 2. Initiate push using the mpesaService singleton
         const result = await mpesaService.stkPush(system, amount, phone, reference, description);
