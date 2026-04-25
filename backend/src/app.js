@@ -36,6 +36,13 @@ app.get('/api/v1/dashboard/stats', authenticateUser, dashboardController.getDash
 app.get('/api/v1/systems', authenticateUser, systemController.getSystems);
 app.post('/api/v1/systems', authenticateUser, systemController.addSystem);
 
+// Root Route
+app.get('/', (req, res) => res.json({ 
+  message: 'Welcome to the MPesa API Gateway', 
+  docs: 'https://github.com/Mosesmungai/my-mpesa-handler',
+  status: 'Running'
+}));
+
 // Health Check
 app.get('/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() }));
 
