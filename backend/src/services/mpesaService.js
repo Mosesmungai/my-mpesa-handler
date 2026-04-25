@@ -44,11 +44,11 @@ class MpesaService {
                 }
             });
 
+            const { access_token, expires_in } = response.data;
             console.log('=== OAUTH SUCCESS ===');
             console.log('Token received:', access_token?.slice(0, 20) + '...');
             console.log('=====================');
 
-            const { access_token, expires_in } = response.data;
             this.tokens.set(cacheKey, {
                 token: access_token,
                 expiry: now + (parseInt(expires_in) * 1000)
