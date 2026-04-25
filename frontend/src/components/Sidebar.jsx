@@ -17,6 +17,7 @@ const Sidebar = ({ user, activeTab, setActiveTab }) => {
         <h2 style={{ fontSize: '1.2rem' }}>Daraja Gateway</h2>
       </div>
 
+      <nav style={{ flex: 1 }}>
         {menuItems.map((item) => (
           <div 
             key={item.id} 
