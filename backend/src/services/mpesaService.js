@@ -13,9 +13,11 @@ class MpesaService {
      */
     async getAuthToken(system) {
         const now = Date.now();
-        const cached = this.tokens.get(system.id);
+        // Create a unique cache key based on ID and credentials
+        const cacheKey = `${system.id}_${system.consumer_key.slice(-8)}`;
+        const cached = this.tokens.get(cacheKey);
 
-        if (cached && cached.expiry > now + 60000) { // Buffer of 60s
+        if (cached && cached.expiry > now + 60000) {
             return cached.token;
         }
 
@@ -35,7 +37,7 @@ class MpesaService {
             });
 
             const { access_token, expires_in } = response.data;
-            this.tokens.set(system.id, {
+            this.tokens.set(cacheKey, {
                 token: access_token,
                 expiry: now + (parseInt(expires_in) * 1000)
             });
