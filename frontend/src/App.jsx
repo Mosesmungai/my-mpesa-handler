@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Systems from './pages/Systems';
 import TestingPanel from './pages/TestingPanel';
 import Logs from './pages/Logs';
+import Settings from './pages/Settings';
 import Login from './pages/Login';
 
 function App() {
@@ -23,11 +24,7 @@ function App() {
         {activeTab === 'systems' && <Systems user={user} />}
         {activeTab === 'testing' && <TestingPanel user={user} />}
         {activeTab === 'logs' && <Logs user={user} />}
-        {activeTab === 'settings' && <div className="glass shadow-glow" style={{ padding: '60px', textAlign: 'center' }}>
-          <Settings size={48} style={{ margin: '0 auto 20px', color: 'var(--primary)' }} />
-          <h2>System Configuration</h2>
-          <p>Maintenance mode and global rate limits are coming soon.</p>
-        </div>}
+        {activeTab === 'settings' && <Settings user={user} />}
       </main>
     </div>
   );
