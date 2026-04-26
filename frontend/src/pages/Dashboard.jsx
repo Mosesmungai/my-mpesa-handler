@@ -6,6 +6,13 @@ const Dashboard = () => {
   const [data, setData] = useState({ stats: [], recent: [] });
   const [loading, setLoading] = useState(true);
 
+  const iconMap = {
+    DollarSign: <DollarSign />,
+    CreditCard: <CreditCard />,
+    Users: <Users />,
+    TrendingUp: <TrendingUp />
+  };
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -20,12 +27,17 @@ const Dashboard = () => {
     fetchStats();
   }, []);
 
-  const stats = data.stats.length > 0 ? data.stats : [
+  const stats = data.stats.length > 0 ? data.stats.map(s => ({
+    ...s,
+    icon: iconMap[s.icon] || <Activity />
+  })) : [
     { label: 'Total Volume', value: 'KES 0.00', icon: <DollarSign />, trend: '0%' },
     { label: 'Transactions', value: '0', icon: <CreditCard />, trend: '0%' },
     { label: 'Active Systems', value: '0', icon: <Users />, trend: '0%' },
     { label: 'Success Rate', value: '0%', icon: <TrendingUp />, trend: '0%' },
   ];
+
+  const recentTransactions = data.recent.length > 0 ? data.recent : [];
 
   return (
     <div className="animate-fade-in">
@@ -52,35 +64,48 @@ const Dashboard = () => {
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
         <div className="glass" style={{ padding: '24px', minHeight: '400px' }}>
           <h3 style={{ marginBottom: '24px' }}>Recent Transactions</h3>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                <th style={{ padding: '12px 0' }}>Transaction ID</th>
-                <th>System</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[1, 2, 3, 4, 5].map((_, i) => (
-                <tr key={i} style={{ borderBottom: '1px solid var(--glass-border)', fontSize: '0.9rem' }}>
-                  <td style={{ padding: '16px 0', fontFamily: 'monospace' }}>TRX-723{i}892</td>
-                  <td>Main App</td>
-                  <td>STK Push</td>
-                  <td>KES 500.00</td>
-                  <td>
-                    <span style={{ padding: '4px 8px', background: 'rgba(0, 230, 118, 0.1)', color: 'var(--primary)', borderRadius: '4px', fontSize: '0.75rem' }}>SUCCESS</span>
-                  </td>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                  <th style={{ padding: '12px 0' }}>Reference</th>
+                  <th>System</th>
+                  <th>Phone</th>
+                  <th>Amount</th>
+                  <th>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {recentTransactions.length > 0 ? recentTransactions.map((trx, i) => (
+                  <tr key={trx.id} style={{ borderBottom: '1px solid var(--glass-border)', fontSize: '0.9rem' }}>
+                    <td style={{ padding: '16px 0', fontFamily: 'monospace' }}>{trx.reference}</td>
+                    <td>{trx.system_name}</td>
+                    <td>{trx.phone}</td>
+                    <td>KES {parseFloat(trx.amount).toLocaleString()}</td>
+                    <td>
+                      <span style={{ 
+                        padding: '4px 8px', 
+                        background: trx.status === 'SUCCESS' ? 'rgba(0, 230, 118, 0.1)' : 'rgba(255, 62, 62, 0.1)', 
+                        color: trx.status === 'SUCCESS' ? 'var(--primary)' : 'var(--error)', 
+                        borderRadius: '4px', fontSize: '0.75rem' 
+                      }}>
+                        {trx.status}
+                      </span>
+                    </td>
+                  </tr>
+                )) : (
+                  <tr>
+                    <td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>No recent transactions</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div className="glass" style={{ padding: '24px' }}>
           <h3 style={{ marginBottom: '24px' }}>System Health</h3>
-          {['Sandbox Environment', 'Production Live', 'Callback Worker'].map((item, i) => (
+          {['Gateway Core', 'Database Instance', 'Callback Listener'].map((item, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }}></div>
               <div style={{ flex: 1 }}>

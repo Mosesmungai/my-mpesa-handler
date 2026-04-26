@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     origin_response JSONB, -- Initial response from Daraja
     status VARCHAR(20) DEFAULT 'PENDING', -- 'PENDING', 'SUCCESS', 'FAILED'
     amount DECIMAL(10, 2),
-    phone_number VARCHAR(20),
+    phone VARCHAR(20),
     reference VARCHAR(100),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

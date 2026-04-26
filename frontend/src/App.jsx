@@ -9,16 +9,40 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('activeTab') || 'dashboard';
+  });
+
+  const handleSetUser = (userData) => {
+    if (userData) {
+      localStorage.setItem('user', JSON.stringify(userData));
+    } else {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+    }
+    setUser(userData);
+  };
+
+  const handleSetActiveTab = (tab) => {
+    localStorage.setItem('activeTab', tab);
+    setActiveTab(tab);
+  };
+
+  const handleLogout = () => {
+    handleSetUser(null);
+  };
 
   if (!user) {
-    return <Login onLoginSuccess={(u) => setUser(u)} />;
+    return <Login onLoginSuccess={handleSetUser} />;
   }
 
   return (
     <div className="app-container">
-      <Sidebar user={user} activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar user={user} activeTab={activeTab} setActiveTab={handleSetActiveTab} onLogout={handleLogout} />
       <main>
         {activeTab === 'dashboard' && <Dashboard user={user} />}
         {activeTab === 'systems' && <Systems user={user} />}

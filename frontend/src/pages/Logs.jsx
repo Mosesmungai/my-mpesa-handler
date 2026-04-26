@@ -9,8 +9,8 @@ const Logs = () => {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const { data } = await api.get('/dashboard/stats'); // We'll add a real logs endpoint next
-        setLogs(data.recent || []);
+        const { data } = await api.get('/dashboard/logs');
+        setLogs(data || []);
       } catch (err) {
         console.error('Failed to fetch logs', err);
       } finally {

@@ -46,6 +46,26 @@ const getDashboardStats = async (req, res) => {
     }
 };
 
+/**
+ * Get full transaction logs
+ */
+const getLogs = async (req, res) => {
+    try {
+        const logs = await db.any(`
+            SELECT t.*, s.name as system_name 
+            FROM transactions t 
+            JOIN systems s ON t.system_id = s.id 
+            ORDER BY t.created_at DESC 
+            LIMIT 100
+        `);
+        res.json(logs);
+    } catch (error) {
+        console.error('Logs Fetch Error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch logs' });
+    }
+};
+
 module.exports = {
-    getDashboardStats
+    getDashboardStats,
+    getLogs
 };

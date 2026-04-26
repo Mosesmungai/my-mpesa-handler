@@ -1,7 +1,7 @@
 import React from 'react';
 import { LayoutDashboard, Settings, Activity, History, Shield, LogOut, ChevronRight } from 'lucide-react';
 
-const Sidebar = ({ user, activeTab, setActiveTab }) => {
+const Sidebar = ({ user, activeTab, setActiveTab, onLogout }) => {
   const menuItems = [
     { id: 'dashboard', icon: <LayoutDashboard size={22} />, label: 'Overview' },
     { id: 'systems', icon: <Shield size={22} />, label: 'Systems Manager' },
@@ -48,14 +48,14 @@ const Sidebar = ({ user, activeTab, setActiveTab }) => {
       <div style={{ padding: '20px', borderRadius: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
           <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(45deg, var(--primary), var(--accent))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#000' }}>
-            {user.username?.[0].toUpperCase()}
+            {user?.username?.[0].toUpperCase()}
           </div>
           <div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 600 }}>{user.username}</div>
+            <div style={{ fontSize: '0.95rem', fontWeight: 600 }}>{user?.username}</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Administrator</div>
           </div>
         </div>
-        <button className="btn btn-outline" style={{ width: '100%', fontSize: '0.85rem', padding: '8px' }} onClick={() => window.location.reload()}>
+        <button className="btn btn-outline" style={{ width: '100%', fontSize: '0.85rem', padding: '8px' }} onClick={onLogout}>
           <LogOut size={16} />
           Sign Out
         </button>
