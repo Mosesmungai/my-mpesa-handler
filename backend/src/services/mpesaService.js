@@ -61,7 +61,11 @@ class MpesaService {
             ? 'https://api.safaricom.co.ke' 
             : 'https://sandbox.safaricom.co.ke';
 
-        const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
+        // Safaricom expects EAT (UTC+3)
+        const now = new Date();
+        const eatOffset = 3 * 60 * 60 * 1000;
+        const eatTime = new Date(now.getTime() + eatOffset);
+        const timestamp = eatTime.toISOString().replace(/[^0-9]/g, '').slice(0, 14);
         const shortcode = system.shortcode.trim();
         
         // Use live passkey from DB or fallback to sandbox passkey from env
