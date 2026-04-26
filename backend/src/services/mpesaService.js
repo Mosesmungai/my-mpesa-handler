@@ -97,7 +97,7 @@ class MpesaService {
         const safeDescription = (description || 'Gateway Payment').toString().slice(0, 13); // Safe limit for Daraja
 
         // Fix potential double slashes in CallBackURL and add token for security
-        const gatewayUrl = (process.env.GATEWAY_URL || '').replaceAll(/\/+$/, '');
+        const gatewayUrl = (process.env.GATEWAY_URL || '').replace(/\/+$/, '');
         let callbackUrl = `${gatewayUrl}/api/v1/callbacks/stk`;
         if (callbackToken) {
             callbackUrl += `?token=${callbackToken}`;
