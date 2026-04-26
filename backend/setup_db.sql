@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS transactions (
     amount DECIMAL(10, 2),
     phone VARCHAR(20),
     reference VARCHAR(100),
+    callback_token VARCHAR(100),
+    result_desc TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 

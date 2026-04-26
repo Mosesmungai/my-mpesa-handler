@@ -1,6 +1,7 @@
 const db = require('../models/db');
 const mpesaService = require('../services/mpesaService');
 const { decrypt } = require('../utils/encryption');
+const crypto = require('crypto');
 
 /**
  * Handle STK Push Test Request from Dashboard
@@ -20,14 +21,17 @@ const testSTKPush = async (req, res) => {
         }
 
 
-        // 2. Initiate push using the mpesaService singleton
-        const result = await mpesaService.stkPush(system, amount, phone, reference, description);
+        // 2. Generate security token for callback verification
+        const callbackToken = crypto.randomUUID();
 
-        // 3. Log the test transaction (Use 'phone' column to match dashboard logs)
+        // 3. Initiate push using the mpesaService singleton
+        const result = await mpesaService.stkPush(system, amount, phone, reference, description, callbackToken);
+
+        // 4. Log the test transaction (Include callback_token)
         await db.none(
-            `INSERT INTO transactions (system_id, transaction_type, merchant_request_id, checkout_request_id, amount, phone, reference, status) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-            [system.id, 'STK_TEST', result.MerchantRequestID, result.CheckoutRequestID, amount, phone, reference, 'PENDING']
+            `INSERT INTO transactions (system_id, transaction_type, merchant_request_id, checkout_request_id, amount, phone, reference, status, callback_token) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            [system.id, 'STK_TEST', result.MerchantRequestID, result.CheckoutRequestID, amount, phone, reference, 'PENDING', callbackToken]
         );
 
         res.json({

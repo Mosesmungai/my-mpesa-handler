@@ -42,7 +42,7 @@ class MpesaService {
 
             this.tokens.set(cacheKey, {
                 token: access_token,
-                expiry: now + (parseInt(expires_in) * 1000)
+                expiry: now + (Number.parseInt(expires_in, 10) * 1000)
             });
 
             return access_token;
@@ -53,9 +53,24 @@ class MpesaService {
     }
 
     /**
+     * Normalize phone number to 254...
+     */
+    normalizePhone(phone) {
+        let normalized = phone.toString().replaceAll(/\D/g, ''); // Remove non-digits
+        if (normalized.startsWith('0')) {
+            normalized = '254' + normalized.substring(1);
+        } else if (normalized.startsWith('7') || normalized.startsWith('1')) {
+            normalized = '254' + normalized;
+        } else if (normalized.startsWith('254')) {
+            // Already normalized
+        }
+        return normalized;
+    }
+
+    /**
      * Trigger STK Push
      */
-    async stkPush(system, amount, phoneNumber, reference, description) {
+    async stkPush(system, amount, phoneNumber, reference, description, callbackToken = null) {
         const token = await this.getAuthToken(system);
         const baseUrl = system.environment === 'live' 
             ? 'https://api.safaricom.co.ke' 
@@ -63,10 +78,11 @@ class MpesaService {
 
         // Safaricom expects EAT (UTC+3)
         const now = new Date();
-        const eatOffset = 3 * 60 * 60 * 1000;
+        const eatOffset = 3 * 60 * 1000 * 60;
         const eatTime = new Date(now.getTime() + eatOffset);
-        const timestamp = eatTime.toISOString().replace(/[^0-9]/g, '').slice(0, 14);
+        const timestamp = eatTime.toISOString().replaceAll(/\D/g, '').slice(0, 14);
         const shortcode = system.shortcode.trim();
+        const normalizedPhone = this.normalizePhone(phoneNumber);
         
         // Use live passkey from DB or fallback to sandbox passkey from env
         const decryptedPasskey = system.passkey ? decrypt(system.passkey) : null;
@@ -76,23 +92,26 @@ class MpesaService {
             `${shortcode}${passkey}${timestamp}`
         ).toString('base64');
 
-        // Sanitize reference and description (max 12 characters for reference is safest for some systems)
-        const safeReference = (reference || 'Payment').toString().replace(/[^a-zA-Z0-9]/g, '').slice(0, 12);
-        const safeDescription = (description || 'Gateway Payment').toString().slice(0, 32);
+        // Sanitize reference and description
+        const safeReference = (reference || 'Payment').toString().replaceAll(/[^a-zA-Z0-9]/g, '').slice(0, 12);
+        const safeDescription = (description || 'Gateway Payment').toString().slice(0, 13); // Safe limit for Daraja
 
-        // Fix potential double slashes in CallBackURL
-        const gatewayUrl = (process.env.GATEWAY_URL || '').replace(/\/+$/, '');
-        const callbackUrl = `${gatewayUrl}/api/v1/callbacks/stk`;
+        // Fix potential double slashes in CallBackURL and add token for security
+        const gatewayUrl = (process.env.GATEWAY_URL || '').replaceAll(/\/+$/, '');
+        let callbackUrl = `${gatewayUrl}/api/v1/callbacks/stk`;
+        if (callbackToken) {
+            callbackUrl += `?token=${callbackToken}`;
+        }
 
         const payload = {
             BusinessShortCode: shortcode,
             Password: password,
             Timestamp: timestamp,
             TransactionType: 'CustomerPayBillOnline',
-            Amount: Math.round(amount), // Ensure it's an integer
-            PartyA: phoneNumber.trim(),
+            Amount: Math.round(amount),
+            PartyA: normalizedPhone,
             PartyB: shortcode,
-            PhoneNumber: phoneNumber.trim(),
+            PhoneNumber: normalizedPhone,
             CallBackURL: callbackUrl,
             AccountReference: safeReference,
             TransactionDesc: safeDescription
@@ -106,7 +125,7 @@ class MpesaService {
         } catch (error) {
             const errorDetail = error.response?.data || error.message;
             console.error('M-Pesa STK Push Error Details:', JSON.stringify(errorDetail, null, 2));
-            throw new Error(errorDetail.errorMessage || errorDetail.errorMessage || 'M-Pesa STK Push failed');
+            throw new Error(errorDetail.errorMessage || 'M-Pesa STK Push failed');
         }
     }
 

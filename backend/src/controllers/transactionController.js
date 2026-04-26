@@ -1,4 +1,5 @@
 const mpesaService = require('../services/mpesaService');
+const crypto = require('crypto');
 const db = require('../models/db');
 
 /**
@@ -13,12 +14,13 @@ const initiateSTKPush = async (req, res) => {
     }
 
     try {
-        const response = await mpesaService.stkPush(system, amount, phone, reference, description || 'Payment');
+        const callbackToken = crypto.randomUUID();
+        const response = await mpesaService.stkPush(system, amount, phone, reference, description || 'Payment', callbackToken);
         
         // Log transaction to DB (Consistency fix: use 'phone' column)
         await db.none(
-            `INSERT INTO transactions (system_id, transaction_type, merchant_request_id, checkout_request_id, amount, phone, reference) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+            `INSERT INTO transactions (system_id, transaction_type, merchant_request_id, checkout_request_id, amount, phone, reference, callback_token) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
             [
                 system.id, 
                 'STK_PUSH', 
@@ -26,7 +28,8 @@ const initiateSTKPush = async (req, res) => {
                 response.CheckoutRequestID, 
                 amount, 
                 phone, 
-                reference
+                reference,
+                callbackToken
             ]
         );
 
