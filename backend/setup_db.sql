@@ -52,3 +52,18 @@ CREATE TABLE IF NOT EXISTS callbacks (
     forward_response JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+-- Global Settings table
+CREATE TABLE IF NOT EXISTS global_settings (
+    id SERIAL PRIMARY KEY,
+    maintenance_mode BOOLEAN DEFAULT FALSE,
+    default_callback_url TEXT,
+    email_alerts_enabled BOOLEAN DEFAULT TRUE,
+    raw_logging_enabled BOOLEAN DEFAULT TRUE,
+    master_admin_token VARCHAR(100),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Initialize default settings
+INSERT INTO global_settings (id, master_admin_token) 
+VALUES (1, 'adm_live_' || encode(gen_random_bytes(12), 'hex'))
+ON CONFLICT (id) DO NOTHING;

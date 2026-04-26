@@ -56,9 +56,13 @@ const handleSTKCallback = async (req, res) => {
 
         // 5. Forward to external system if callback_url exists
         const system = await db.one('SELECT callback_url FROM systems WHERE id = $1', [transaction.system_id]);
-        if (system.callback_url) {
+        const globalSettings = await db.one('SELECT default_callback_url FROM global_settings WHERE id = 1');
+        
+        const targetUrl = system.callback_url || globalSettings.default_callback_url;
+        
+        if (targetUrl) {
             try {
-                const forwardRes = await axios.post(system.callback_url, normalized, { timeout: 5000 });
+                const forwardRes = await axios.post(targetUrl, normalized, { timeout: 5000 });
                 await db.none(
                     'UPDATE callbacks SET forwarded = TRUE, forward_response = $1 WHERE id = $2',
                     [forwardRes.data, callbackEntry.id]
