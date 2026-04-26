@@ -62,27 +62,36 @@ class MpesaService {
             : 'https://sandbox.safaricom.co.ke';
 
         const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
+        const shortcode = system.shortcode.trim();
         
         // Use live passkey from DB or fallback to sandbox passkey from env
         const decryptedPasskey = system.passkey ? decrypt(system.passkey) : null;
-        const passkey = decryptedPasskey || process.env.SANDBOX_PASSKEY;
+        const passkey = (decryptedPasskey || process.env.SANDBOX_PASSKEY || '').trim();
         
         const password = Buffer.from(
-            `${system.shortcode}${passkey}${timestamp}`
+            `${shortcode}${passkey}${timestamp}`
         ).toString('base64');
 
+        // Sanitize reference and description (max 12 characters for reference is safest for some systems)
+        const safeReference = (reference || 'Payment').toString().replace(/[^a-zA-Z0-9]/g, '').slice(0, 12);
+        const safeDescription = (description || 'Gateway Payment').toString().slice(0, 32);
+
+        // Fix potential double slashes in CallBackURL
+        const gatewayUrl = (process.env.GATEWAY_URL || '').replace(/\/+$/, '');
+        const callbackUrl = `${gatewayUrl}/api/v1/callbacks/stk`;
+
         const payload = {
-            BusinessShortCode: system.shortcode,
+            BusinessShortCode: shortcode,
             Password: password,
             Timestamp: timestamp,
             TransactionType: 'CustomerPayBillOnline',
-            Amount: amount,
-            PartyA: phoneNumber,
-            PartyB: system.shortcode,
-            PhoneNumber: phoneNumber,
-            CallBackURL: `${process.env.GATEWAY_URL}/api/v1/callbacks/stk`,
-            AccountReference: reference,
-            TransactionDesc: description
+            Amount: Math.round(amount), // Ensure it's an integer
+            PartyA: phoneNumber.trim(),
+            PartyB: shortcode,
+            PhoneNumber: phoneNumber.trim(),
+            CallBackURL: callbackUrl,
+            AccountReference: safeReference,
+            TransactionDesc: safeDescription
         };
 
         try {
