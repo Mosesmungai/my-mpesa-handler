@@ -28,12 +28,6 @@ class MpesaService {
             ? 'https://api.safaricom.co.ke' 
             : 'https://sandbox.safaricom.co.ke';
 
-        // DEBUG: Log what we're actually sending to Daraja
-        console.log('=== DARAJA AUTH DEBUG ===');
-        console.log('Base URL:', baseUrl);
-        console.log('Consumer Key (first 10 chars):', consumerKey?.slice(0, 10));
-        console.log('Consumer Secret (first 10 chars):', consumerSecret?.slice(0, 10));
-        console.log('=========================');
         
         const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
 
@@ -45,9 +39,6 @@ class MpesaService {
             });
 
             const { access_token, expires_in } = response.data;
-            console.log('=== OAUTH SUCCESS ===');
-            console.log('Token received:', access_token?.slice(0, 20) + '...');
-            console.log('=====================');
 
             this.tokens.set(cacheKey, {
                 token: access_token,
@@ -72,10 +63,9 @@ class MpesaService {
 
         const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
         
-        // Use sandbox passkey from env or live passkey from DB
-        const passkey = system.environment === 'sandbox' 
-            ? process.env.SANDBOX_PASSKEY 
-            : decrypt(system.passkey);
+        // Use live passkey from DB or fallback to sandbox passkey from env
+        const decryptedPasskey = system.passkey ? decrypt(system.passkey) : null;
+        const passkey = decryptedPasskey || process.env.SANDBOX_PASSKEY;
         
         const password = Buffer.from(
             `${system.shortcode}${passkey}${timestamp}`
